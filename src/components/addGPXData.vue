@@ -1,10 +1,16 @@
 <template>
   <div>
-      <select id="GPXFileSelect" @change="selectGPX" v-model="selectedGPX">
-          <option disabled value="">Please select one GPX file</option>
-          <option v-for="(file, idx) in fileList.GPXFileList" :key="idx+'_'+file" :value="file.name">{{ file.name }}</option>
-      </select>
-      <input type="button" value="addGPXData" @click="addData"/>
+      <div class="searchBox">
+        <input type="text" @input="searchGPXFile" v-model="searchItem"/>
+        <div v-for="(file, idx) in searchList" :key="idx+'_'+file" @click="addDataFromSearch(file.name)">{{ file.name }}</div>
+      </div>
+      <div class="select">
+        <select id="GPXFileSelect" @change="selectGPX" v-model="selectedGPX">
+            <option disabled value="">Please select one GPX file</option>
+            <option v-for="(file, idx) in fileList.GPXFileList" :key="idx+'_'+file" :value="file.name">{{ file.name }}</option>
+        </select>
+        <input type="button" value="addGPXData" @click="addData"/>
+      </div>
   </div>
 </template>
 
@@ -23,15 +29,29 @@ export default {
   data () {
     return {
         fileList: GPXFileList,
-        selectedGPX: ''
+        searchList: JSON.parse(JSON.stringify(GPXFileList)).GPXFileList, // a copy of GPXFileList
+        selectedGPX: '',
+        searchItem: ''
     }
   },
-  mounted () {
-
-  },
   methods: {
+    searchGPXFile: function() {
+        var self = this;
+        // initialize the searchlist, so every time it starts with the original GPFFileList, avoid 2-way data binding so we don't modify the original array
+        var searchList = JSON.parse(JSON.stringify(GPXFileList));
+        // filter the searchList array, so only the matched items will show
+        var filtered = searchList.GPXFileList.filter(function(el) {
+            return el.name.indexOf(self.searchItem) > -1;
+        });
+        // set the searchList variable 
+        this.searchList = filtered;
+    },
     selectGPX: function() {
-        //console.log('selectedGPX:', this.selectedGPX);
+        this.addData();
+    },
+    addDataFromSearch: function(GPXFileName) {
+        this.selectedGPX = GPXFileName;
+        this.addData();
     },
     addData: function() {
         var self = this;
@@ -87,8 +107,8 @@ export default {
                 }),
                 'MultiLineString': new Style({
                     stroke: new Stroke({
-                        color: '#0bf2ec',
-                        width: 3
+                        color: 'red',
+                        width: 5
                     })
                 }),
                 'MultiPolygon': new Style({
@@ -124,3 +144,15 @@ export default {
   }
 }
 </script>
+
+<style>
+    .searchBox {
+        border: 1px solid #0bf2ec;
+        display: inline-block;
+        min-height: 100px;
+    }
+    .select{
+        border: 1px solid #0bf2ec;
+        display: inline-block;
+    }
+</style>
