@@ -1,10 +1,10 @@
 <template>
   <div>
       <div class="searchBox">
-        <input type="text" @input="searchGPXFile" v-model="searchItem"/>
+        <input type="text" placeholder="search for the GPX file" @input="searchGPXFile" v-model="searchItem"/>
         <div v-for="(file, idx) in searchList" :key="idx+'_'+file" @click="addDataFromSearch(file.name)">{{ file.name }}</div>
       </div>
-      <div class="select">
+      <div class="selectGPX">
         <select id="GPXFileSelect" @change="selectGPX" v-model="selectedGPX">
             <option disabled value="">Please select one GPX file</option>
             <option v-for="(file, idx) in fileList.GPXFileList" :key="idx+'_'+file" :value="file.name">{{ file.name }}</option>
@@ -150,8 +150,17 @@ export default {
         border: 1px solid #0bf2ec;
         display: inline-block;
         min-height: 100px;
+        padding: 2px 5px;
     }
-    .select{
+    .searchBox > div:hover {
+        cursor: pointer;
+        background: #0bf2ec;
+    }
+    .searchBox > input {
+        box-sizing: border-box; 
+        width: 100%;
+    }
+    .selectGPX{
         border: 1px solid #0bf2ec;
         display: inline-block;
     }
